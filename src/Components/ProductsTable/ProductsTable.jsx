@@ -14,6 +14,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -43,6 +44,19 @@ function UsersTable() {
   const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
 
+  const deleteUser = (id, name) => {
+    axios
+      .delete(`http://localhost:7000/product/${id}`)
+      .then((response) => {
+        console.log(response);
+        const filteredProducts = products.filter((user) => user._id != id);
+        setProducts(filteredProducts);
+      })
+      .catch((err) => {
+        console.log('Network Error');
+      });
+  };
+
   React.useEffect(() => {
     axios
       .get('http://localhost:7000/product')
@@ -57,7 +71,21 @@ function UsersTable() {
 
   return (
     <div>
-      <div className="flex flex-row justify-end">
+      <div className="flex flex-row justify-between">
+        <div className="font-mono mt-8 ml-12 text-xl">
+          <span
+            className="mr-2"
+            onClick={() => {
+              navigate('/products');
+            }}
+          >
+            <KeyboardBackspaceIcon color="primary" />
+            Back
+          </span>
+        </div>
+        <h1 className="font-mono text-2xl mt-6 font-black ml-20">
+          Products Details
+        </h1>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-12"
           onClick={() => {
@@ -93,7 +121,12 @@ function UsersTable() {
                     <EditOutlinedIcon color="primary" />
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <DeleteOutlineOutlinedIcon className="red-icon" />
+                    <DeleteOutlineOutlinedIcon
+                      className="red-icon"
+                      onClick={() => {
+                        deleteUser(row._id, row.name);
+                      }}
+                    />
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

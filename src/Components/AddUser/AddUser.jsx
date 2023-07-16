@@ -6,10 +6,30 @@ import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 function AddUser() {
   const [name, setName] = React.useState('');
   const [showAlert, setShowAlert] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [disable, setDisable] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const addUser = (e) => {
     if (e.key == 'Enter' || e.type == 'click') {
@@ -18,6 +38,8 @@ function AddUser() {
           name,
         })
         .then((response) => {
+          setDisable(false);
+          handleClose();
           setName('');
           setShowAlert(true);
           setTimeout(() => {
@@ -62,7 +84,10 @@ function AddUser() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
-              addUser(e);
+              // addUser(e);
+              if (e.key == 'Enter') {
+                handleClickOpen();
+              }
             }}
           />
         </Box>
@@ -70,7 +95,8 @@ function AddUser() {
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
           onClick={(e) => {
             e.preventDefault();
-            addUser(e);
+            // addUser(e);
+            handleClickOpen();
           }}
         >
           Add User
@@ -96,6 +122,38 @@ function AddUser() {
           </Stack>
         </div>
       )}
+      <div>
+        <Dialog
+          fullScreen={fullScreen}
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="responsive-dialog-title"
+        >
+          <DialogTitle id="responsive-dialog-title">
+            {'Add New User ?'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure to add new user ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button
+              onClick={(e) => {
+                addUser(e);
+                setDisable(true);
+              }}
+              disabled={disable}
+              autoFocus
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </div>
   );
 }

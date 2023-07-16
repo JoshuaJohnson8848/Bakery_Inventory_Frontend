@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './UsersTable.css';
+import './ProductsTable.css';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,6 +14,10 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+function createData(name, calories, fat, carbs, protein) {
+  return { name, calories, fat, carbs, protein };
+}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,15 +40,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function UsersTable() {
-  const [userNames, setUserNames] = React.useState([]);
+  const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
 
   React.useEffect(() => {
     axios
-      .get('http://localhost:7000/users')
+      .get('http://localhost:7000/product')
       .then((response) => {
-        setUserNames(response.data.users);
-        console.log(response.data.users);
+        setProducts(response.data.products);
+        console.log(response.data.products);
       })
       .catch((err) => {
         console.log('Network Error');
@@ -57,10 +61,10 @@ function UsersTable() {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-12"
           onClick={() => {
-            navigate('/add-user');
+            navigate('/add-product');
           }}
         >
-          Add User
+          Add Product
         </button>
       </div>
       <div className="mt-5 mx-10 my-10 shadow-2xl">
@@ -69,26 +73,22 @@ function UsersTable() {
             <TableHead>
               <TableRow>
                 <StyledTableCell>#</StyledTableCell>
-                <StyledTableCell align="center">Customer Name</StyledTableCell>
-                <StyledTableCell align="center">History&nbsp;</StyledTableCell>
-                <StyledTableCell align="center">View&nbsp;</StyledTableCell>
+                <StyledTableCell align="center">Product Name</StyledTableCell>
+                <StyledTableCell align="center">Price&nbsp;</StyledTableCell>
+                <StyledTableCell align="center">Qty&nbsp;</StyledTableCell>
                 <StyledTableCell align="center">Edit&nbsp;</StyledTableCell>
                 <StyledTableCell align="center">Delete&nbsp;</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {userNames.map((row, index) => (
+              {products.map((row, index) => (
                 <StyledTableRow key={row.name}>
                   <StyledTableCell component="th" scope="row">
                     {index + 1}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.name}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    <AssignmentOutlinedIcon color="success" />
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    <VisibilityOutlinedIcon color="primary" />
-                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.price}</StyledTableCell>
+                  <StyledTableCell align="center">{row.qty}</StyledTableCell>
                   <StyledTableCell align="center">
                     <EditOutlinedIcon color="primary" />
                   </StyledTableCell>

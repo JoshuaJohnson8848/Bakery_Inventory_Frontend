@@ -1,0 +1,9 @@
+body {
+  outline: none;
+}
+
+.full-height {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}

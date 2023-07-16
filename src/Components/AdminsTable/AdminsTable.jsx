@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './UsersTable.css';
+import './AdminsTable.css';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -35,7 +35,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function UsersTable() {
+function AdminsTable() {
   const [userNames, setUserNames] = React.useState([]);
   const navigate = useNavigate();
 
@@ -105,4 +105,4 @@ function UsersTable() {
   );
 }
 
-export default UsersTable;
+export default AdminsTable;

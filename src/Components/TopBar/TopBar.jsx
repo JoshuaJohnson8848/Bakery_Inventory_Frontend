@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './TopBar.css';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,6 +16,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import { useNavigate } from 'react-router-dom';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
+import { grey } from '@mui/material/colors';
 
 function TopBar() {
   const [state, setState] = React.useState({
@@ -23,6 +30,8 @@ function TopBar() {
     bottom: false,
     right: false,
   });
+
+  const navigate = useNavigate();
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -36,26 +45,68 @@ function TopBar() {
   };
 
   const list = (anchor) => (
-    <Box
-      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        {['Users', 'Products', 'Admins', 'Advances'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
+    <div className="h-full sideBar-color">
+      <Box
+        sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+        role="presentation"
+        onClick={toggleDrawer(anchor, false)}
+        onKeyDown={toggleDrawer(anchor, false)}
+      >
+        <List>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/users');
+              }}
+            >
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <PeopleOutlineIcon sx={{ color: grey[50] }} />
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={'Users'} className="white-bg" />
             </ListItemButton>
           </ListItem>
-        ))}
-      </List>
-      <Divider />
-    </Box>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/products');
+              }}
+            >
+              <ListItemIcon>
+                <ProductionQuantityLimitsOutlinedIcon
+                  sx={{ color: grey[50] }}
+                />
+              </ListItemIcon>
+              <ListItemText primary={'Products'} className="white-bg" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/admins');
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsOutlinedIcon sx={{ color: grey[50] }} />
+              </ListItemIcon>
+              <ListItemText primary={'Admins'} className="white-bg" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/advances');
+              }}
+            >
+              <ListItemIcon>
+                <AccountBalanceOutlinedIcon sx={{ color: grey[50] }} />
+              </ListItemIcon>
+              <ListItemText primary={'Advances'} className="white-bg" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+      </Box>
+    </div>
   );
 
   return (

@@ -15,10 +15,10 @@ import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+import TablePagination from '@mui/material/TablePagination';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Stack from '@mui/material/Stack';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,14 +43,48 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function UsersTable() {
   const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertMsg, setAlertMsg] = React.useState('');
+  const [alertSeverity, setAlertSeverity] = React.useState('');
+  const [alertTitle, setAlertTitle] = React.useState('');
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const deleteUser = (id, name) => {
     axios
       .delete(`http://localhost:7000/product/${id}`)
       .then((response) => {
         console.log(response);
+        if (
+          response.data.message ==
+          'Product is included in history and cannot be deleted'
+        ) {
+          setAlertSeverity('info');
+          setAlertTitle('Info');
+          setAlertMsg('Product is included in history and cannot be deleted');
+          setShowAlert(true);
+          return setTimeout(() => {
+            setShowAlert(false);
+          }, 5000);
+        }
         const filteredProducts = products.filter((user) => user._id != id);
         setProducts(filteredProducts);
+        setAlertSeverity('success');
+        setAlertTitle('Success');
+        setAlertMsg('Product Deleted Successfully');
+        setShowAlert(true);
+        return setTimeout(() => {
+          setShowAlert(false);
+        }, 5000);
       })
       .catch((err) => {
         console.log('Network Error');
@@ -68,6 +102,23 @@ function UsersTable() {
         console.log('Network Error');
       });
   }, []);
+
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setShowAlert(false);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  // Apply pagination to the userNames array
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
 
   return (
     <div>
@@ -109,10 +160,10 @@ function UsersTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((row, index) => (
+              {paginatedProducts.map((row, index) => (
                 <StyledTableRow key={row.name}>
                   <StyledTableCell component="th" scope="row">
-                    {index + 1}
+                    {startIndex + index + 1}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.name}</StyledTableCell>
                   <StyledTableCell align="center">{row.price}</StyledTableCell>
@@ -133,7 +184,35 @@ function UsersTable() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          component="div"
+          count={products.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </div>
+      {showAlert && (
+        <div
+          className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
+          onClick={() => setShowAlert(false)}
+        >
+          <Stack sx={{ width: '100%' }} spacing={2}>
+            <Alert
+              variant="filled"
+              severity={alertSeverity}
+              sx={{
+                transition: 'opacity 0.5s ease-in-out',
+                opacity: showAlert ? 1 : 0,
+              }}
+            >
+              <AlertTitle>{alertTitle}</AlertTitle>
+              {alertMsg}
+            </Alert>
+          </Stack>
+        </div>
+      )}
     </div>
   );
 }

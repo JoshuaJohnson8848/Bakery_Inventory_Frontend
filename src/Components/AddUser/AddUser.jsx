@@ -14,6 +14,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 function AddUser() {
   const [name, setName] = React.useState('');
@@ -22,6 +24,7 @@ function AddUser() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [disable, setDisable] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -48,6 +51,7 @@ function AddUser() {
         })
         .catch((err) => {
           console.log('Network Error');
+          setDisable(false);
         });
     }
   };
@@ -65,94 +69,108 @@ function AddUser() {
   }, []);
 
   return (
-    <div className="flex flex-row justify-center my-52 ml-16">
-      <div className="flex flex-col justify-center">
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '60ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <div className="font-bold font-sans">Add New User</div>
-          <TextField
-            id="outlined-basic"
-            label="User Name"
-            variant="outlined"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              // addUser(e);
-              if (e.key == 'Enter') {
-                handleClickOpen();
-              }
-            }}
-          />
-        </Box>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
-          onClick={(e) => {
-            e.preventDefault();
-            // addUser(e);
-            handleClickOpen();
+    <div>
+      <div className="font-mono mt-8 ml-12 text-xl">
+        <span
+          className="mr-2"
+          onClick={() => {
+            navigate('/users');
           }}
         >
-          Add User
-        </button>
+          <KeyboardBackspaceIcon color="primary" />
+          Back
+        </span>
       </div>
-      {showAlert && (
-        <div
-          className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
-          onClick={() => setShowAlert(false)}
-        >
-          <Stack sx={{ width: '100%' }} spacing={2}>
-            <Alert
-              variant="filled"
-              severity="success"
-              sx={{
-                transition: 'opacity 0.5s ease-in-out',
-                opacity: showAlert ? 1 : 0,
+      <div className="flex flex-row justify-center my-44 ml-16">
+        <div className="flex flex-col justify-center">
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add New User</div>
+            <TextField
+              required
+              id="outlined-basic"
+              label="User Name"
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                // addUser(e);
+                if (e.key == 'Enter') {
+                  handleClickOpen();
+                }
               }}
-            >
-              <AlertTitle>Success</AlertTitle>
-              New User Added Successfully
-            </Alert>
-          </Stack>
+            />
+          </Box>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
+            onClick={(e) => {
+              e.preventDefault();
+              // addUser(e);
+              handleClickOpen();
+            }}
+          >
+            Add User
+          </button>
         </div>
-      )}
-      <div>
-        <Dialog
-          fullScreen={fullScreen}
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="responsive-dialog-title"
-        >
-          <DialogTitle id="responsive-dialog-title">
-            {'Add New User ?'}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure to add new user ?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button autoFocus onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              onClick={(e) => {
-                addUser(e);
-                setDisable(true);
-              }}
-              disabled={disable}
-              autoFocus
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {showAlert && (
+          <div
+            className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
+            onClick={() => setShowAlert(false)}
+          >
+            <Stack sx={{ width: '100%' }} spacing={2}>
+              <Alert
+                variant="filled"
+                severity="success"
+                sx={{
+                  transition: 'opacity 0.5s ease-in-out',
+                  opacity: showAlert ? 1 : 0,
+                }}
+              >
+                <AlertTitle>Success</AlertTitle>
+                New User Added Successfully
+              </Alert>
+            </Stack>
+          </div>
+        )}
+        <div>
+          <Dialog
+            fullScreen={fullScreen}
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="responsive-dialog-title"
+          >
+            <DialogTitle id="responsive-dialog-title">
+              {'Add New User ?'}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure to add new user ?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button autoFocus onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button
+                onClick={(e) => {
+                  addUser(e);
+                  setDisable(true);
+                }}
+                disabled={disable}
+                autoFocus
+              >
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

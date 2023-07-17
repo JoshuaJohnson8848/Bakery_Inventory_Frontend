@@ -22,6 +22,8 @@ import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/Production
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
 import { grey } from '@mui/material/colors';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AddIcon from '@mui/icons-material/Add';
 
 function TopBar() {
   const [state, setState] = React.useState({
@@ -101,6 +103,30 @@ function TopBar() {
                 <AccountBalanceOutlinedIcon sx={{ color: grey[50] }} />
               </ListItemIcon>
               <ListItemText primary={'Advances'} className="white-bg" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/add-user');
+              }}
+            >
+              <ListItemIcon>
+                <PersonAddIcon sx={{ color: grey[50] }} />
+              </ListItemIcon>
+              <ListItemText primary={'Add User'} className="white-bg" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                navigate('/add-product');
+              }}
+            >
+              <ListItemIcon>
+                <AddIcon sx={{ color: grey[50] }} />
+              </ListItemIcon>
+              <ListItemText primary={'Add Product'} className="white-bg" />
             </ListItemButton>
           </ListItem>
         </List>

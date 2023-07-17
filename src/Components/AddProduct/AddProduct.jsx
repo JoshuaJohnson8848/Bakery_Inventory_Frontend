@@ -14,6 +14,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useNavigate } from 'react-router-dom';
 
 function AddProduct() {
   const [name, setName] = React.useState('');
@@ -24,6 +26,7 @@ function AddProduct() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [disable, setDisable] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,6 +57,7 @@ function AddProduct() {
         })
         .catch((err) => {
           console.log('Network Error');
+          setDisable(false);
         });
     }
   };
@@ -71,135 +75,148 @@ function AddProduct() {
   }, []);
 
   return (
-    <div className="flex flex-row justify-center my-24 ml-16">
-      <div className="flex flex-col justify-center">
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '60ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <div className="font-bold font-sans">Add New Product</div>
-          <TextField
-            required
-            id="outlined-basic"
-            label="Product Name"
-            variant="outlined"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Box>
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '60ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <div className="font-bold font-sans">Add Price</div>
-          <TextField
-            required
-            id="outlined-basic"
-            label="Price"
-            variant="outlined"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </Box>
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '60ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <div className="font-bold font-sans">Add Qty</div>
-          <TextField
-            required
-            id="outlined-basic"
-            type="number"
-            label="Qty"
-            variant="outlined"
-            value={qty}
-            onChange={(e) => setQty(e.target.value)}
-            onKeyDown={(e) => {
-              // addProduct(e);
-              if (e.key == 'Enter') {
-                handleClickOpen();
-              }
-            }}
-          />
-        </Box>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
-          onClick={(e) => {
-            e.preventDefault();
-            // addProduct(e);
-            handleClickOpen();
+    <div>
+      <div className="font-mono mt-8 ml-12 text-xl">
+        <span
+          className="mr-2"
+          onClick={() => {
+            navigate('/products');
           }}
         >
-          Add User
-        </button>
+          <KeyboardBackspaceIcon color="primary" />
+          Back
+        </span>
       </div>
-      {showAlert && (
-        <div
-          className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
-          onClick={() => setShowAlert(false)}
-        >
-          <Stack sx={{ width: '100%' }} spacing={2}>
-            <Alert
-              variant="filled"
-              severity="success"
-              sx={{
-                transition: 'opacity 0.5s ease-in-out',
-                opacity: showAlert ? 1 : 0,
+      <div className="flex flex-row justify-center my-20 ml-16">
+        <div className="flex flex-col justify-center">
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add New Product</div>
+            <TextField
+              required
+              id="outlined-basic"
+              label="Product Name"
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Box>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add Price</div>
+            <TextField
+              required
+              id="outlined-basic"
+              label="Price"
+              variant="outlined"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </Box>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add Qty</div>
+            <TextField
+              required
+              id="outlined-basic"
+              type="number"
+              label="Qty"
+              variant="outlined"
+              value={qty}
+              onChange={(e) => setQty(e.target.value)}
+              onKeyDown={(e) => {
+                // addProduct(e);
+                if (e.key == 'Enter') {
+                  handleClickOpen();
+                }
               }}
-            >
-              <AlertTitle>Success</AlertTitle>
-              New Product Added Successfully
-            </Alert>
-          </Stack>
+            />
+          </Box>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
+            onClick={(e) => {
+              e.preventDefault();
+              // addProduct(e);
+              handleClickOpen();
+            }}
+          >
+            Add Product
+          </button>
         </div>
-      )}
-      <div>
-        <Dialog
-          fullScreen={fullScreen}
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="responsive-dialog-title"
-        >
-          <DialogTitle id="responsive-dialog-title">
-            {'Add New Product ?'}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure to add new product ?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button autoFocus onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              onClick={(e) => {
-                setDisable(true);
-                addProduct(e);
-              }}
-              disabled={disable}
-              autoFocus
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {showAlert && (
+          <div
+            className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
+            onClick={() => setShowAlert(false)}
+          >
+            <Stack sx={{ width: '100%' }} spacing={2}>
+              <Alert
+                variant="filled"
+                severity="success"
+                sx={{
+                  transition: 'opacity 0.5s ease-in-out',
+                  opacity: showAlert ? 1 : 0,
+                }}
+              >
+                <AlertTitle>Success</AlertTitle>
+                New Product Added Successfully
+              </Alert>
+            </Stack>
+          </div>
+        )}
+        <div>
+          <Dialog
+            fullScreen={fullScreen}
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="responsive-dialog-title"
+          >
+            <DialogTitle id="responsive-dialog-title">
+              {'Add New Product ?'}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure to add new product ?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button autoFocus onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button
+                onClick={(e) => {
+                  setDisable(true);
+                  addProduct(e);
+                }}
+                disabled={disable}
+                autoFocus
+              >
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

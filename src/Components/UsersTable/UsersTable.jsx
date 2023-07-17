@@ -15,6 +15,10 @@ import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import TablePagination from '@mui/material/TablePagination';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Stack from '@mui/material/Stack';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,6 +43,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function UsersTable() {
   const [userNames, setUserNames] = React.useState([]);
   const navigate = useNavigate();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertMsg, setAlertMsg] = React.useState('');
+  const [alertSeverity, setAlertSeverity] = React.useState('');
+  const [alertTitle, setAlertTitle] = React.useState('');
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   React.useEffect(() => {
     axios
@@ -59,11 +78,23 @@ function UsersTable() {
         console.log(response);
         const filteredNames = userNames.filter((user) => user._id != id);
         setUserNames(filteredNames);
+        setAlertSeverity('success');
+        setAlertTitle('Success');
+        setAlertMsg('User Deleted Successfully');
+        setShowAlert(true);
+        return setTimeout(() => {
+          setShowAlert(false);
+        }, 5000);
       })
       .catch((err) => {
         console.log('Network Error');
       });
   };
+
+  // Apply pagination to the userNames array
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedUserNames = userNames.slice(startIndex, endIndex);
 
   return (
     <div>
@@ -79,7 +110,7 @@ function UsersTable() {
             Back
           </span>
         </div>
-        <h1 className="font-mono text-2xl mt-6 font-black ml-20">
+        <h1 className="font-mono text-2xl mt-6 font-black ml-16">
           Users Details
         </h1>
         <button
@@ -105,10 +136,10 @@ function UsersTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {userNames.map((row, index) => (
+              {paginatedUserNames.map((row, index) => (
                 <StyledTableRow key={row.name}>
                   <StyledTableCell component="th" scope="row">
-                    {index + 1}
+                    {startIndex + index + 1}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.name}</StyledTableCell>
                   <StyledTableCell align="center">
@@ -133,7 +164,35 @@ function UsersTable() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          component="div"
+          count={userNames.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </div>
+      {showAlert && (
+        <div
+          className="fixed inset-0 flex flex-row justify-center z-50 w-80 my-20 mx-6"
+          onClick={() => setShowAlert(false)}
+        >
+          <Stack sx={{ width: '100%' }} spacing={2}>
+            <Alert
+              variant="filled"
+              severity={alertSeverity}
+              sx={{
+                transition: 'opacity 0.5s ease-in-out',
+                opacity: showAlert ? 1 : 0,
+              }}
+            >
+              <AlertTitle>{alertTitle}</AlertTitle>
+              {alertMsg}
+            </Alert>
+          </Stack>
+        </div>
+      )}
     </div>
   );
 }

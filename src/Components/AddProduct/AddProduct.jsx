@@ -27,6 +27,9 @@ function AddProduct() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [disable, setDisable] = React.useState(false);
   const navigate = useNavigate();
+  const [alertMsg, setAlertMsg] = React.useState('');
+  const [alertSeverity, setAlertSeverity] = React.useState('');
+  const [alertTitle, setAlertTitle] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -50,6 +53,9 @@ function AddProduct() {
           setName('');
           setPrice(0);
           setQty(0);
+          setAlertSeverity('success');
+          setAlertTitle('Success');
+          setAlertMsg('Successfully Added New Product');
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
@@ -58,6 +64,15 @@ function AddProduct() {
         .catch((err) => {
           console.log('Network Error');
           setDisable(false);
+          setDisable(false);
+          setAlertSeverity('error');
+          setAlertTitle('Failed');
+          setAlertMsg('Something Went Wrong');
+          handleClose();
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 5000);
         });
     }
   };
@@ -126,6 +141,7 @@ function AddProduct() {
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              inputProps={{ min: '0' }}
             />
           </Box>
           <Box
@@ -146,6 +162,7 @@ function AddProduct() {
               variant="outlined"
               value={qty}
               onChange={(e) => setQty(e.target.value)}
+              inputProps={{ min: '0' }}
               onKeyDown={(e) => {
                 // addProduct(e);
                 if (e.key == 'Enter') {
@@ -173,14 +190,14 @@ function AddProduct() {
             <Stack sx={{ width: '100%' }} spacing={2}>
               <Alert
                 variant="filled"
-                severity="success"
+                severity={alertSeverity}
                 sx={{
                   transition: 'opacity 0.5s ease-in-out',
                   opacity: showAlert ? 1 : 0,
                 }}
               >
-                <AlertTitle>Success</AlertTitle>
-                New Product Added Successfully
+                <AlertTitle>{alertTitle}</AlertTitle>
+                {alertMsg}
               </Alert>
             </Stack>
           </div>

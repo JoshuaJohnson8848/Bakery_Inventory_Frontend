@@ -25,6 +25,9 @@ function AddUser() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [disable, setDisable] = React.useState(false);
   const navigate = useNavigate();
+  const [alertMsg, setAlertMsg] = React.useState('');
+  const [alertSeverity, setAlertSeverity] = React.useState('');
+  const [alertTitle, setAlertTitle] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -44,6 +47,9 @@ function AddUser() {
           setDisable(false);
           handleClose();
           setName('');
+          setAlertSeverity('success');
+          setAlertTitle('Success');
+          setAlertMsg('Successfully Added New User');
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
@@ -52,6 +58,14 @@ function AddUser() {
         .catch((err) => {
           console.log('Network Error');
           setDisable(false);
+          setAlertSeverity('error');
+          setAlertTitle('Failed');
+          setAlertMsg('Something Went Wrong');
+          handleClose();
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 5000);
         });
     }
   };
@@ -127,14 +141,14 @@ function AddUser() {
             <Stack sx={{ width: '100%' }} spacing={2}>
               <Alert
                 variant="filled"
-                severity="success"
+                severity={alertSeverity}
                 sx={{
                   transition: 'opacity 0.5s ease-in-out',
                   opacity: showAlert ? 1 : 0,
                 }}
               >
-                <AlertTitle>Success</AlertTitle>
-                New User Added Successfully
+                <AlertTitle>{alertTitle}</AlertTitle>
+                {alertMsg}
               </Alert>
             </Stack>
           </div>

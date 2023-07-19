@@ -7,6 +7,7 @@ import ProductsTable from './Components/ProductsTable/ProductsTable';
 import AddUser from './Components/AddUser/AddUser';
 import AddProduct from './Components/AddProduct/AddProduct';
 import AdminsTable from './Components/AdminsTable/AdminsTable';
+import EditUser from './Components/EditUser/EditUser';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           {/* <Route path="/admins" element={<AdminsTable />} /> */}
           <Route path="/add-user" element={<AddUser />} />
           <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/edit-user" element={<EditUser />} />
         </Routes>
       </BrowserRouter>
     </div>

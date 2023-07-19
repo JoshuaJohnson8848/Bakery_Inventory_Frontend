@@ -149,7 +149,12 @@ function UsersTable() {
                     <VisibilityOutlinedIcon color="primary" />
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <EditOutlinedIcon color="primary" />
+                    <EditOutlinedIcon
+                      color="primary"
+                      onClick={() => {
+                        navigate('/edit-user', { state: { row } });
+                      }}
+                    />
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     <DeleteOutlineOutlinedIcon

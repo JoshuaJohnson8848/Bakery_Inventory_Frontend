@@ -143,7 +143,12 @@ function UsersTable() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.name}</StyledTableCell>
                   <StyledTableCell align="center">
-                    <AssignmentOutlinedIcon color="success" />
+                    <AssignmentOutlinedIcon
+                      color="success"
+                      onClick={() => {
+                        navigate('/history', { state: { row } });
+                      }}
+                    />
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     <VisibilityOutlinedIcon color="primary" />

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './EditUser.css';
+import './EditProduct.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
@@ -14,11 +14,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { useLocation, useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-function EditUser() {
+function EditProduct() {
   const [name, setName] = React.useState('');
+  const [price, setPrice] = React.useState(0);
+  const [qty, setQty] = React.useState(0);
   const [showAlert, setShowAlert] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
@@ -29,7 +31,7 @@ function EditUser() {
   const [alertSeverity, setAlertSeverity] = React.useState('');
   const [alertTitle, setAlertTitle] = React.useState('');
   const location = useLocation();
-  const userId = location.state.row._id;
+  const productId = location.state.row._id;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,18 +41,20 @@ function EditUser() {
     setOpen(false);
   };
 
-  const updateUser = (e) => {
+  const updateProduct = (e) => {
     if (e.key == 'Enter' || e.type == 'click') {
       axios
-        .put(`http://localhost:7000/users/${userId}`, {
+        .put(`http://localhost:7000/product/${productId}`, {
           name,
+          price,
+          qty,
         })
         .then((response) => {
           setDisable(false);
           handleClose();
           setAlertSeverity('success');
           setAlertTitle('Success');
-          setAlertMsg('Successfully Updated User');
+          setAlertMsg('Successfully Updated Product');
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
@@ -58,6 +62,7 @@ function EditUser() {
         })
         .catch((err) => {
           console.log('Network Error');
+          setDisable(false);
           setDisable(false);
           setAlertSeverity('error');
           setAlertTitle('Failed');
@@ -73,11 +78,15 @@ function EditUser() {
 
   React.useEffect(() => {
     axios
-      .get(`http://localhost:7000/users/${userId}`, {})
+      .get(`http://localhost:7000/product/${productId}`, {})
       .then((response) => {
-        console.log(response.data.user);
-        const userName = response.data.user.name;
-        setName(userName);
+        console.log(response.data.product);
+        const name = response.data.product.name;
+        const qty = response.data.product.qty;
+        const price = response.data.product.price;
+        setName(name);
+        setQty(qty);
+        setPrice(price);
       })
       .catch((err) => {
         console.log('Network Error');
@@ -102,14 +111,14 @@ function EditUser() {
         <span
           className="mr-2"
           onClick={() => {
-            navigate('/users');
+            navigate('/products');
           }}
         >
           <KeyboardBackspaceIcon color="primary" />
           Back
         </span>
       </div>
-      <div className="flex flex-row justify-center my-44 ml-16">
+      <div className="flex flex-row justify-center my-20 ml-16">
         <div className="flex flex-col justify-center">
           <Box
             component="form"
@@ -120,16 +129,58 @@ function EditUser() {
             autoComplete="off"
             onSubmit={(e) => e.preventDefault()}
           >
-            <div className="font-bold font-sans">Add New User</div>
+            <div className="font-bold font-sans">Add New Product</div>
             <TextField
               required
               id="outlined-basic"
-              label="User Name"
+              label="Product Name"
               variant="outlined"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </Box>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add Price</div>
+            <TextField
+              required
+              id="outlined-basic"
+              label="Price"
+              variant="outlined"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              inputProps={{ min: '0' }}
+            />
+          </Box>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '60ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="font-bold font-sans">Add Qty</div>
+            <TextField
+              required
+              id="outlined-basic"
+              type="number"
+              label="Qty"
+              variant="outlined"
+              value={qty}
+              onChange={(e) => setQty(e.target.value)}
+              inputProps={{ min: '0' }}
               onKeyDown={(e) => {
-                // updateUser(e);
+                // addProduct(e);
                 if (e.key == 'Enter') {
                   handleClickOpen();
                 }
@@ -140,11 +191,11 @@ function EditUser() {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-10 ml-2"
             onClick={(e) => {
               e.preventDefault();
-              // updateUser(e);
+              // addProduct(e);
               handleClickOpen();
             }}
           >
-            Update User
+            Update Product
           </button>
         </div>
         {showAlert && (
@@ -175,11 +226,11 @@ function EditUser() {
             aria-labelledby="responsive-dialog-title"
           >
             <DialogTitle id="responsive-dialog-title">
-              {'Update User ?'}
+              {'Add New Product ?'}
             </DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Are you sure to update user ?
+                Are you sure to add new product ?
               </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -188,8 +239,8 @@ function EditUser() {
               </Button>
               <Button
                 onClick={(e) => {
-                  updateUser(e);
                   setDisable(true);
+                  updateProduct(e);
                 }}
                 disabled={disable}
                 autoFocus
@@ -204,4 +255,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default EditProduct;

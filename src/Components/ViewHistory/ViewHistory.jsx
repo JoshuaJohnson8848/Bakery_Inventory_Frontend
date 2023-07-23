@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './ProductsTable.css';
+import './ViewHistory.css';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,9 +11,8 @@ import Paper from '@mui/material/Paper';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import TablePagination from '@mui/material/TablePagination';
 import Alert from '@mui/material/Alert';
@@ -40,7 +39,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function UsersTable() {
+function ViewHistory() {
   const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
@@ -49,6 +48,9 @@ function UsersTable() {
   const [alertMsg, setAlertMsg] = React.useState('');
   const [alertSeverity, setAlertSeverity] = React.useState('');
   const [alertTitle, setAlertTitle] = React.useState('');
+  const location = useLocation();
+  const userId = location.state.row._id;
+  const [history, setHistory] = React.useState([]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -59,44 +61,44 @@ function UsersTable() {
     setPage(0);
   };
 
-  const deleteUser = (id, name) => {
-    axios
-      .delete(`http://localhost:7000/product/${id}`)
-      .then((response) => {
-        console.log(response);
-        if (
-          response.data.message ==
-          'Product is included in history and cannot be deleted'
-        ) {
-          setAlertSeverity('info');
-          setAlertTitle('Info');
-          setAlertMsg('Product is included in history and cannot be deleted');
-          setShowAlert(true);
-          return setTimeout(() => {
-            setShowAlert(false);
-          }, 5000);
-        }
-        const filteredProducts = products.filter((user) => user._id != id);
-        setProducts(filteredProducts);
-        setAlertSeverity('success');
-        setAlertTitle('Success');
-        setAlertMsg('Product Deleted Successfully');
-        setShowAlert(true);
-        return setTimeout(() => {
-          setShowAlert(false);
-        }, 5000);
-      })
-      .catch((err) => {
-        console.log('Network Error');
-      });
-  };
+  //   const deleteUser = (id, name) => {
+  //     axios
+  //       .delete(`http://localhost:7000/product/${id}`)
+  //       .then((response) => {
+  //         console.log(response);
+  //         if (
+  //           response.data.message ==
+  //           'Product is included in history and cannot be deleted'
+  //         ) {
+  //           setAlertSeverity('info');
+  //           setAlertTitle('Info');
+  //           setAlertMsg('Product is included in history and cannot be deleted');
+  //           setShowAlert(true);
+  //           return setTimeout(() => {
+  //             setShowAlert(false);
+  //           }, 5000);
+  //         }
+  //         const filteredProducts = products.filter((user) => user._id != id);
+  //         setProducts(filteredProducts);
+  //         setAlertSeverity('success');
+  //         setAlertTitle('Success');
+  //         setAlertMsg('Product Deleted Successfully');
+  //         setShowAlert(true);
+  //         return setTimeout(() => {
+  //           setShowAlert(false);
+  //         }, 5000);
+  //       })
+  //       .catch((err) => {
+  //         console.log('Network Error');
+  //       });
+  //   };
 
   React.useEffect(() => {
     axios
-      .get('http://localhost:7000/product')
+      .get(`http://localhost:7000/history/${userId}`)
       .then((response) => {
-        setProducts(response.data.products);
-        console.log(response.data.products);
+        console.log(response.data.history);
+        setHistory(response.data.history);
       })
       .catch((err) => {
         console.log('Network Error');
@@ -134,9 +136,7 @@ function UsersTable() {
             Back
           </span>
         </div>
-        <h1 className="font-mono text-2xl mt-6 font-black ml-20">
-          Products Details
-        </h1>
+        <h1 className="font-mono text-2xl mt-6 font-black ml-20">History</h1>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-4 mr-12"
           onClick={() => {
@@ -152,39 +152,55 @@ function UsersTable() {
             <TableHead>
               <TableRow>
                 <StyledTableCell>#</StyledTableCell>
-                <StyledTableCell align="center">Product Name</StyledTableCell>
-                <StyledTableCell align="center">Price&nbsp;</StyledTableCell>
+                <StyledTableCell align="center">Date</StyledTableCell>
+                <StyledTableCell align="center">
+                  Product Name&nbsp;
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  Price/Unit&nbsp;
+                </StyledTableCell>
                 <StyledTableCell align="center">Qty&nbsp;</StyledTableCell>
-                <StyledTableCell align="center">Edit&nbsp;</StyledTableCell>
                 <StyledTableCell align="center">Delete&nbsp;</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginatedProducts.map((row, index) => (
-                <StyledTableRow key={row.name}>
-                  <StyledTableCell component="th" scope="row">
-                    {startIndex + index + 1}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{row.name}</StyledTableCell>
-                  <StyledTableCell align="center">{row.price}</StyledTableCell>
-                  <StyledTableCell align="center">{row.qty}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    <EditOutlinedIcon
-                      color="primary"
-                      onClick={() => {
-                        navigate('/edit-product', { state: { row } });
-                      }}
-                    />
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    <DeleteOutlineOutlinedIcon
-                      className="red-icon"
-                      onClick={() => {
-                        deleteUser(row._id, row.name);
-                      }}
-                    />
-                  </StyledTableCell>
-                </StyledTableRow>
+              {/* {paginatedProducts.map((row, index) => ( */}
+              {history.map((row, index) => (
+                <React.Fragment key={row._id}>
+                  <StyledTableRow key={row.date}>
+                    <StyledTableCell component="th" scope="row">
+                      {startIndex + index + 1}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.date}</StyledTableCell>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.price}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.qty}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      <DeleteOutlineOutlinedIcon
+                        className="red-icon"
+                        onClick={() => {
+                          deleteUser(row._id, row.name);
+                        }}
+                      />
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  {row.name.map((name, subIndex) => (
+                    <StyledTableRow key={name}>
+                      <StyledTableCell component="th" scope="row" />
+                      <StyledTableCell align="center" />
+                      <StyledTableCell align="center">{name}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.price[subIndex]}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.qty[subIndex]}
+                      </StyledTableCell>
+                      <StyledTableCell align="center" />
+                    </StyledTableRow>
+                  ))}
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
@@ -222,4 +238,4 @@ function UsersTable() {
   );
 }
 
-export default UsersTable;
+export default ViewHistory;

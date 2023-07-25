@@ -18,6 +18,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
+import moment from 'moment';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -120,7 +121,7 @@ function ViewHistory() {
   // Apply pagination to the userNames array
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const paginatedProducts = products.slice(startIndex, endIndex);
+  const paginatedHistory = history.slice(startIndex, endIndex);
 
   return (
     <div>
@@ -153,31 +154,70 @@ function ViewHistory() {
               <TableRow>
                 <StyledTableCell>#</StyledTableCell>
                 <StyledTableCell align="center">Date</StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell align="center" />
+                <StyledTableCell align="left" colSpan={2}>
                   Product Name&nbsp;
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  Price/Unit&nbsp;
+                <StyledTableCell align="left" colSpan={2}>
+                  Price / Unit&nbsp;
                 </StyledTableCell>
-                <StyledTableCell align="center">Qty&nbsp;</StyledTableCell>
-                <StyledTableCell align="center">Delete&nbsp;</StyledTableCell>
+                <StyledTableCell align="left" colSpan={2}>
+                  Quantity&nbsp;
+                </StyledTableCell>
+                <StyledTableCell align="center" colSpan={2}>
+                  Delete&nbsp;
+                </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {paginatedProducts.map((row, index) => ( */}
-              {history.map((row, index) => (
+              {paginatedHistory.map((row, index) => (
                 <React.Fragment key={row._id}>
-                  <StyledTableRow key={row.date}>
+                  {/* This is the main row */}
+                  <StyledTableRow>
                     <StyledTableCell component="th" scope="row">
                       {startIndex + index + 1}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.date}</StyledTableCell>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.price}
+                      {moment(row.date).format('LL')}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.qty}</StyledTableCell>
-                    <StyledTableCell align="center">
+                    {/* Empty cell for spacing */}
+                    <StyledTableCell align="center" />
+
+                    {/* Render the Price and Quantity columns with a sub-table */}
+                    <StyledTableCell align="center" colSpan={2}>
+                      <Table>
+                        <TableBody>
+                          {row.name.map((name, subIndex) => (
+                            <TableRow key={`${name}-${subIndex}`}>
+                              <TableCell>{name}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </StyledTableCell>
+                    <StyledTableCell align="center" colSpan={2}>
+                      <Table>
+                        <TableBody>
+                          {row.price.map((price, subIndex) => (
+                            <TableRow key={`${price}-${subIndex}`}>
+                              <TableCell>{price}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </StyledTableCell>
+                    <StyledTableCell align="center" colSpan={2}>
+                      <Table>
+                        <TableBody>
+                          {row.qty.map((qty, subIndex) => (
+                            <TableRow key={`${qty}-${subIndex}`}>
+                              <TableCell>{qty}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </StyledTableCell>
+                    <StyledTableCell align="center" colSpan={2}>
                       <DeleteOutlineOutlinedIcon
                         className="red-icon"
                         onClick={() => {
@@ -186,20 +226,6 @@ function ViewHistory() {
                       />
                     </StyledTableCell>
                   </StyledTableRow>
-                  {row.name.map((name, subIndex) => (
-                    <StyledTableRow key={name}>
-                      <StyledTableCell component="th" scope="row" />
-                      <StyledTableCell align="center" />
-                      <StyledTableCell align="center">{name}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.price[subIndex]}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.qty[subIndex]}
-                      </StyledTableCell>
-                      <StyledTableCell align="center" />
-                    </StyledTableRow>
-                  ))}
                 </React.Fragment>
               ))}
             </TableBody>
@@ -207,7 +233,7 @@ function ViewHistory() {
         </TableContainer>
         <TablePagination
           component="div"
-          count={products.length}
+          count={history.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
